@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\penjualan;
+use App\Models\transaksi;
 use App\Models\product;
-use App\Models\TransaksiDetail;
+use App\Models\TransaksiDetaili;
 use Illuminate\Http\Request;
-use App\Http\Resources\PenjualanResource;
+use App\Http\Resources\TransaksiResource;
 use Illuminate\Support\Facades\Validator;
 
-class PenjualanController extends Controller
+class TransaksiController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,7 +19,7 @@ class PenjualanController extends Controller
      */
     public function index()
     {
-        return new PenjualanResource(penjualan::all());
+        return new TransaksiResource(transaksi::all());
     }
 
     /**
@@ -27,9 +27,10 @@ class PenjualanController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        //set validation
+
     }
 
     /**
@@ -38,29 +39,23 @@ class PenjualanController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $r)
+    public function store(Request $request)
     {
-        $order = penjualan::create([
-            'total' => 0,
+        $validator = Validator::make($request->all(), [
+            'total'   => 'required'
         ]);
-        $totalPrice = 0;
-        foreach ($r->cart as $data_cart) {
-            $qty = $data_cart['qty'];
-            $price = $data_cart['price'];
-            $subtotal = $price * $qty;
 
-            $create = TransaksiDetail::create([
-                'id_penjualan' => $order->id,
-                'id_barang' => $data_cart['id'],
-                'qty' => $data_cart['qty'],
-                'price' => $price,
-                'subtotal' => $subtotal,
-            ]);
-
-            $totalPrice += $subtotal;
+        //response error validation
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
-        penjualan::find($order->id)->update(['total' => $totalPrice]);
-        return response()->json(['status' => true, 'message' => '<b>Transaksi Sukses!</b>']);
+
+        //save to database
+        $transaksi = transaksi::create([
+            'total'     => $request->total
+        ]);
+
+        return new TransaksiResource($transaksi);
     }
 
     /**
@@ -74,15 +69,17 @@ class PenjualanController extends Controller
         //
     }
 
+
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request, transaksi $transaksi)
     {
-        //
+        //set validation
+
     }
 
     /**
@@ -92,7 +89,7 @@ class PenjualanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, transaksi $transaksi)
     {
         $validator = Validator::make($request->all(), [
             'total'   => 'required'
@@ -104,13 +101,13 @@ class PenjualanController extends Controller
         }
 
         //update to database
-        $penjualan = penjualan::where('id', $request->id)->update([
+        $transaksi = transaksi::where('id', $request->id)->update([
             'total'     => $request->total
         ]);
 
-        $result = penjualan::where('id', $request->id)->first();
+        $result = transaksi::where('id', $request->id)->first();
 
-        return new PenjualanResource($penjualan);
+        return new TransaksiResource($transaksi);
     }
 
     /**
@@ -121,6 +118,7 @@ class PenjualanController extends Controller
      */
     public function destroy(Request $request)
     {
+        //set validation
         $validator = Validator::make($request->all(), [
             'id'   => 'required'
         ]);
@@ -130,10 +128,10 @@ class PenjualanController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $penjualan = penjualan::where('id', $request->id)->delete();
+        $transaksi = transaksi::where('id', $request->id)->delete();
 
         $result = array("status" => "sukses", "message" => "Hapus Berhasil");
 
-        return new PenjualanResource($result);
+        return new TransaksiResource($result);
     }
 }
