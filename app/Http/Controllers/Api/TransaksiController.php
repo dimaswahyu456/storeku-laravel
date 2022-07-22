@@ -42,7 +42,11 @@ class TransaksiController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'total'   => 'required'
+            'qty'   => 'required',
+            'total'   => 'required',
+            'sub_total'   => 'required',
+            'total_bayar'   => 'required',
+            'id_barang'   => 'required',
         ]);
 
         //response error validation
@@ -52,7 +56,11 @@ class TransaksiController extends Controller
 
         //save to database
         $transaksi = transaksi::create([
-            'total'     => $request->total
+            'qty'     => $request->qty,
+            'total'     => $request->total,
+            'sub_total'     => $request->sub_total,
+            'total_bayar'     => $request->total_bayar,
+            'id_barang'     => $request->id_barang,
         ]);
 
         return new TransaksiResource($transaksi);

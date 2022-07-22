@@ -9,6 +9,6 @@ class penjualan extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'tanggal', 'total'
+        'total'
     ];
 }

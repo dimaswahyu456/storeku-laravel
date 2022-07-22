@@ -18,5 +18,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::apiResource('/product', App\Http\Controllers\Api\ProductController::class);
-Route::apiResource('/transaksi', App\Http\Controllers\Api\TransaksiController::class);
-Route::apiResource('/penjualan', App\Http\Controllers\Api\TransaksiController::class);
+Route::apiResource('/transaksidetail', App\Http\Controllers\Api\TransaksiDetailController::class);
+Route::apiResource('/penjualan', App\Http\Controllers\Api\PenjualanController::class);
